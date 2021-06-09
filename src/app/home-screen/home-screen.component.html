@@ -1,0 +1,25 @@
+<div class="container">
+  <div class="card" style="max-width: 40rem;">
+    <div class="card-header text-center">
+      My ToDo List
+    </div>
+    <ul *ngFor="let toDo of toDos" class="list-group list-group-flush">
+      <li class="list-group-item d-flex justify-content-between">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <input class="" type="checkbox" aria-label="Checkbox for following text input" (click)="updateToDo(toDo)">
+            </div>
+            <div class="col">
+              <span class="description"> {{toDo.description}}</span>
+            </div>
+            <div class="col">
+              <span class="ms-auto dueDate"
+                [className]="isComplete(toDo.dueDate)">{{toDo.dueDate}}</span>{{toDo.isComplete}}
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>

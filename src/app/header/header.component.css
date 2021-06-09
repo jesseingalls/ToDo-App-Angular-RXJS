@@ -1,0 +1,9 @@
+.navbar-brand {
+  color: white;
+}
+
+span {
+  padding-left: 1rem;
+  float: left;
+  /* Added */
+}
