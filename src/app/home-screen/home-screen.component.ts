@@ -11,7 +11,6 @@ export class HomeScreenComponent implements OnInit {
   res: any;
   toDos: ToDo[] = [];
   loading: boolean = false;
-  checkedBox = document.getElementById('checkbox');
 
   constructor(private toDoService: ToDoService) { }
 
