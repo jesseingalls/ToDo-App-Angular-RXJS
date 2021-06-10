@@ -27,7 +27,7 @@ export class ToDoService {
       );
   }
   
-  // Update toDo object return and return success message.
+  // Update toDo object and return success message.
   public updateToDo(id: number): Observable<any> {
     let jsonData = {'isComplete': true}
     return this.http.patch(this.baseUrl + 'patch/'  + id, jsonData, { 'headers': this.headers}).pipe(
@@ -48,6 +48,7 @@ export class ToDoService {
         toDo.dueDate = (1 + date.getMonth()).toString().padStart(2, '0') + '/' +date.getDate().toString().padStart(2, '0') + '/' + date.getFullYear();
       }
       else {
+        // Remove null values.
         toDo.formattedDueDate = today;
       }
       if (toDo.isComplete) {

@@ -17,7 +17,6 @@ export class HomeScreenComponent implements OnInit {
 
   ngOnInit() {
     this.getToDos();
-    this.checkBox();
   }
 
   getToDos() {
@@ -43,11 +42,5 @@ export class HomeScreenComponent implements OnInit {
       }
     }
    this.loading = false;
-  }
-
-  checkBox() {
-    if (this.checkedBox) {
-      console.log(this.checkedBox)
-    }
   }
 }
