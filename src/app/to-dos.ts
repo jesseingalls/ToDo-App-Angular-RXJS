@@ -1,6 +1,6 @@
 export interface ToDo {
-  id: string,
-  description: string,
-  isComplete: boolean,
-  dueDate: string
+  id: string;
+  description: string;
+  isComplete: boolean;
+  dueDate: Date;
 }

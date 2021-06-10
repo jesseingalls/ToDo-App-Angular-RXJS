@@ -13,3 +13,24 @@
   float: none;
   /* Added */
 }
+
+._red {
+  background-color: rgb(248, 126, 126);
+}
+
+._green {
+  background-color: lightgreen;
+}
+
+._due {
+  border: 2px solid black;
+}
+
+.wrapper {
+  background-color: #361999;
+  height: 100vh;
+}
+
+._lineThrough {
+  text-decoration: line-through;
+}

@@ -10,6 +10,8 @@ import { ToDo } from '../to-dos';
 export class HomeScreenComponent implements OnInit {
   res: any;
   toDos: ToDo[] = [];
+  loading: boolean = false;
+
   constructor(private toDoService: ToDoService) { }
 
   ngOnInit() {
@@ -17,6 +19,7 @@ export class HomeScreenComponent implements OnInit {
   }
 
   getToDos() {
+    this.loading = true;
     this.toDoService.getToDos()
       .subscribe(Response => {
         if (Response) {
@@ -24,22 +27,26 @@ export class HomeScreenComponent implements OnInit {
           this.toDos = this.res;
         }
         this.toDoService.sortByDate(this.toDos);
+        this.toDoService.formatDate(this.toDos);
+        this.loading = false;
       })
   }
 
   updateToDo(toDo) {
+    this.loading = true;
     if (toDo.id) {
-      console.log('to do')
-      this.toDoService.updateToDo(toDo.id).subscribe();
+      if (toDo['isComplete'] == false) {
+        console.log(toDo['isComplete'])
+        toDo['isComplete'] = true;
+        this.toDoService.updateToDo(toDo.id).subscribe();
+        this.toDoService.sortByDate(this.toDos);
+      }
+      // else {
+      //   toDo['isComplete'] = false;
+      //   this.toDoService.updateToDo(toDo.id).subscribe();
+      //   this.toDoService.sortByDate(this.toDos);
+      // }
     }
-    toDo['isComplete'] = true;
-    this.toDoService.sortByCompleted(this.toDos);
+   this.loading = false;
   }
-  
-  isComplete(dueDate) {
-    if (dueDate !== null) {
-      return 'border: 1px black'
-    }
-  }
-  
 }

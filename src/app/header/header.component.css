@@ -1,5 +1,9 @@
 .navbar-brand {
-  color: white;
+  color: #78FFF1;
+}
+
+nav {
+  background-color: #361999;
 }
 
 span {

@@ -27,35 +27,15 @@ export class ToDoService {
       );
   }
 
+  // update toDo return success message
   public updateToDo(id: number): Observable<any> {
     let jsonData = {'isComplete': true}
     console.log(id)
     return this.http.patch(this.baseUrl + 'patch/'  + id, jsonData, { 'headers': this.headers}).pipe(
+      // tap(_ => this.getToDos()),
       map((res) => console.log(res)),
       catchError(this.handleError)
     )
-  }
-
-  private moveNullDatesToBack(toDos) {
-    let count = 0;
-    let nullDatesArray = [];
-
-    for (let i = 0; i < toDos.length; i++) {
-      if (toDos[i]['dueDate'] === null) {
-        count++;
-      } else {
-        break;
-      }
-    }
-
-    nullDatesArray = (toDos.slice(0, count));
-    toDos.splice(0, count);
-  
-    nullDatesArray.forEach((toDo) => {
-      toDos.push(toDo);
-    })
-
-    return toDos;
   }
 
   public sortByCompleted(toDos) {
@@ -69,7 +49,7 @@ export class ToDoService {
     return toDos;
   }
 
-  private formatDate(toDos) {
+  public formatDate(toDos) {
     toDos.forEach((toDo) => {
       if (toDo['dueDate'] !== null) {
         let dates = '';
@@ -82,6 +62,39 @@ export class ToDoService {
     })
     
     return toDos;
+  }
+
+  public sortNullDatesNotComplete(toDos) {
+    for (let i = 0; i < toDos.length; i++) {
+      if (toDos[i]['dueDate'] === null && toDos[i]['isComplete'] === false) {
+        let currToDo = toDos.slice(i, i + 1)
+        // console.log(currToDo)
+        toDos.splice(i, 1) 
+        toDos.push(currToDo[0])
+      }
+    }
+  }
+
+  public sortWithDueDateCompletedTrue(toDos) {
+    for (let i = 0; i < toDos.length; i++) {
+      if (toDos[i]['dueDate'] !== null && toDos[i]['isComplete'] === true) {
+        let currToDo = toDos.slice(i, i + 1)
+        // console.log(currToDo)
+        toDos.splice(i, 1) 
+        toDos.push(currToDo[0])
+      }
+    }
+  }
+
+  public sortDueDateNullCompletedTrue(toDos) {
+    for (let i = 0; i < toDos.length; i++) {
+      if (toDos[i]['dueDate'] === null && toDos[i]['isComplete'] === true) {
+        let currToDo = toDos.slice(i, i + 1)
+        // console.log(currToDo)
+        toDos.splice(i, 1) 
+        toDos.push(currToDo[0])
+      }
+    }
   }
 
   public sortByDate(toDos) {
@@ -98,19 +111,20 @@ export class ToDoService {
     toDos.sort((a, b) => {
       return Number(a['dueDate']) - Number(b['dueDate'])
     })
-  
-    this.sortByCompleted(toDos)
+    
+    //TODO: refactor this code, not optimal but gets the job done
 
-    this.moveNullDatesToBack(toDos);
-    this.formatDate(toDos);
-    // for (let i = 0; i < toDos.length; i++) {
-    //   if (toDos[i]['isComplete'] === true) {
-    //     let completedTask = toDos.splice(i, 1)
-    //     // console.log(completedTask);
-    //     toDos.push(completedTask[0])
-    //   }
-    // }
+    // sort for not complete and null due date and move that item to the back
+    this.sortNullDatesNotComplete(toDos)
 
+    //sort for due date not null but completed = true, and move to back
+    this.sortWithDueDateCompletedTrue(toDos)
+
+    //sort for due date = null and complete = true
+    this.sortDueDateNullCompletedTrue(toDos)
+    
+    // // format date for UI
+    // this.formatDate(toDos);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
