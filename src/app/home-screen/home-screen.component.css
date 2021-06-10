@@ -34,3 +34,11 @@
 ._lineThrough {
   text-decoration: line-through;
 }
+
+._gray {
+  background-color: gray;
+}
+
+._completed {
+  text-decoration: line-through;
+}

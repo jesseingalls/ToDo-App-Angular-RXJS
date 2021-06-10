@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs/';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-// import { ToDo } from './to-dos';
+import { ToDo } from './to-dos';
 
 @Injectable({
   providedIn: 'root'
@@ -19,119 +19,59 @@ export class ToDoService {
 
   constructor(private http: HttpClient) { }
 
-  // http call return observable
+  // HTTP call to API returns observable ToDo [].
   public getToDos(): Observable<any> {
-    return this.http.get(this.baseUrl + 'get', { 'headers': this.headers})
+    return this.http.get<ToDo[]>(this.baseUrl + 'get', { 'headers': this.headers})
       .pipe(
         catchError(this.handleError())
       );
   }
-
-  // update toDo return success message
+  
+  // Update toDo object return and return success message.
   public updateToDo(id: number): Observable<any> {
     let jsonData = {'isComplete': true}
-    console.log(id)
     return this.http.patch(this.baseUrl + 'patch/'  + id, jsonData, { 'headers': this.headers}).pipe(
-      // tap(_ => this.getToDos()),
       map((res) => console.log(res)),
       catchError(this.handleError)
     )
   }
 
-  public sortByCompleted(toDos) {
-    for (let i = 0; i < toDos.length; i++) {
-      if (toDos[i]['isComplete'] === true) {
-        let completedTask = toDos.splice(i, 1)
-        // console.log(completedTask);
-        toDos.push(completedTask[0])
-      }
-    }
-    return toDos;
-  }
-
-  public formatDate(toDos) {
+  public sort(toDos: ToDo[]) {
+    let today = new Date();
     toDos.forEach((toDo) => {
-      if (toDo['dueDate'] !== null) {
-        let dates = '';
-        let dateString = toDo['dueDate'];
-        dates += (dateString.slice(4,6) + '/');
-        dates += (dateString.slice(6,9) + '/');
-        dates += (dateString.slice(0,4));
-        toDo['dueDate'] = dates;
+      // Assign a sortOrder number value based on the various conditions.
+      if (toDo.dueDate !== null) {
+        toDo.formattedDueDate = new Date(toDo.dueDate);
+        
+        // Format due date to MM/DD/YYYYY.
+        let date = new Date(toDo.dueDate);
+        toDo.dueDate = (1 + date.getMonth()).toString().padStart(2, '0') + '/' +date.getDate().toString().padStart(2, '0') + '/' + date.getFullYear();
       }
-    })
-    
-    return toDos;
-  }
+      else {
+        toDo.formattedDueDate = today;
+      }
+      if (toDo.isComplete) {
+        toDo.sortOrder = 3; 
+      }
+      else if (toDo.formattedDueDate < today && toDo.dueDate !== null) {
+        toDo.sortOrder = 1;
+      }
+      else {
+        toDo.sortOrder = 2;
+      }
+    });
 
-  public sortNullDatesNotComplete(toDos) {
-    for (let i = 0; i < toDos.length; i++) {
-      if (toDos[i]['dueDate'] === null && toDos[i]['isComplete'] === false) {
-        let currToDo = toDos.slice(i, i + 1)
-        // console.log(currToDo)
-        toDos.splice(i, 1) 
-        toDos.push(currToDo[0])
-      }
-    }
-  }
-
-  public sortWithDueDateCompletedTrue(toDos) {
-    for (let i = 0; i < toDos.length; i++) {
-      if (toDos[i]['dueDate'] !== null && toDos[i]['isComplete'] === true) {
-        let currToDo = toDos.slice(i, i + 1)
-        // console.log(currToDo)
-        toDos.splice(i, 1) 
-        toDos.push(currToDo[0])
-      }
-    }
-  }
-
-  public sortDueDateNullCompletedTrue(toDos) {
-    for (let i = 0; i < toDos.length; i++) {
-      if (toDos[i]['dueDate'] === null && toDos[i]['isComplete'] === true) {
-        let currToDo = toDos.slice(i, i + 1)
-        // console.log(currToDo)
-        toDos.splice(i, 1) 
-        toDos.push(currToDo[0])
-      }
-    }
-  }
-
-  public sortByDate(toDos) {
-    // format date to functional number for sorting
-    toDos.forEach((toDo) => {
-      if (toDo['dueDate'] !== null) {
-        let dueDate = toDo['dueDate'];
-        dueDate = dueDate.slice(0, 10);
-        dueDate = dueDate.split('-').join('');
-        toDo['dueDate'] = dueDate;
-      }
-    })
-    // sort array by due date number
+    // Sort the array by assigned sortOrder value and dueDate.
     toDos.sort((a, b) => {
-      return Number(a['dueDate']) - Number(b['dueDate'])
-    })
-    
-    //TODO: refactor this code, not optimal but gets the job done
-
-    // sort for not complete and null due date and move that item to the back
-    this.sortNullDatesNotComplete(toDos)
-
-    //sort for due date not null but completed = true, and move to back
-    this.sortWithDueDateCompletedTrue(toDos)
-
-    //sort for due date = null and complete = true
-    this.sortDueDateNullCompletedTrue(toDos)
-    
-    // // format date for UI
-    // this.formatDate(toDos);
+      return a.sortOrder - b.sortOrder || a.formattedDueDate.getTime() - b.formattedDueDate.getTime();
+    });
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
   
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      // TODO: send the error to remote logging infrastructure.
+      console.error(error); // log to console instead.
   
       // Let the app keep running by returning an empty result.
       return of(result as T);

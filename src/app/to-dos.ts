@@ -2,5 +2,7 @@ export interface ToDo {
   id: string;
   description: string;
   isComplete: boolean;
-  dueDate: Date;
+  dueDate: string;
+  sortOrder: number;
+  formattedDueDate: Date;
 }

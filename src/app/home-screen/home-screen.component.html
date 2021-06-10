@@ -1,6 +1,5 @@
 <div *ngIf="loading" class="d-flex justify-content-center">
   <div class="spinner-grow text-info" role="status">
-    <!-- <span class="sr-only">Loading...</span> -->
   </div>
 </div>
 <div class="wrapper">
@@ -10,19 +9,20 @@
         My ToDo List
       </div>
       <ul *ngFor="let toDo of toDos" class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between" [class._red]="toDo.isComplete === false"
-          [class._green]="toDo.isComplete === true">
+        <li class="list-group-item d-flex justify-content-between" [class._red]="toDo.sortOrder === 1"
+          [class._green]="toDo.sortOrder === 3" [class._gray]="toDo.sortOrder === 2">
           <div class="container">
             <div class="row">
               <div class="col">
-                <input class="" type="checkbox" aria-label="Checkbox for following text input"
-                  (click)="updateToDo(toDo)">
+                <input type="checkbox" aria-label="Checkbox for following text input" (click)="updateToDo(toDo)"
+                  [checked]="toDo.isComplete">
               </div>
               <div class="col">
-                <span class="description" [class._lineThrough]="toDo.isComplete === true"> {{toDo.description}}</span>
+                <span class="description" [class._lineThrough]="toDo.sortOrder === 3"> {{toDo.description}}</span>
               </div>
               <div class="col">
-                <span class="ms-auto dueDate" [class._due]="toDo.dueDate !== null">{{toDo.dueDate}}</span>
+                <span class="ms-auto dueDate" [class._due]="toDo.dueDate !== null"
+                  [class._completed]="toDo.sortOrder === 3">{{toDo.dueDate}}</span>
               </div>
             </div>
           </div>

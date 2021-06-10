@@ -11,23 +11,24 @@ export class HomeScreenComponent implements OnInit {
   res: any;
   toDos: ToDo[] = [];
   loading: boolean = false;
+  checkedBox = document.getElementById('checkbox');
 
   constructor(private toDoService: ToDoService) { }
 
   ngOnInit() {
     this.getToDos();
+    this.checkBox();
   }
 
   getToDos() {
     this.loading = true;
     this.toDoService.getToDos()
-      .subscribe(Response => {
+      .subscribe(Response => {  
         if (Response) {
           this.res = Response;
           this.toDos = this.res;
         }
-        this.toDoService.sortByDate(this.toDos);
-        this.toDoService.formatDate(this.toDos);
+        this.toDoService.sort(this.toDos);
         this.loading = false;
       })
   }
@@ -36,17 +37,17 @@ export class HomeScreenComponent implements OnInit {
     this.loading = true;
     if (toDo.id) {
       if (toDo['isComplete'] == false) {
-        console.log(toDo['isComplete'])
         toDo['isComplete'] = true;
         this.toDoService.updateToDo(toDo.id).subscribe();
-        this.toDoService.sortByDate(this.toDos);
+        this.toDoService.sort(this.toDos);
       }
-      // else {
-      //   toDo['isComplete'] = false;
-      //   this.toDoService.updateToDo(toDo.id).subscribe();
-      //   this.toDoService.sortByDate(this.toDos);
-      // }
     }
    this.loading = false;
+  }
+
+  checkBox() {
+    if (this.checkedBox) {
+      console.log(this.checkedBox)
+    }
   }
 }
